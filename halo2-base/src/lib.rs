@@ -1,9 +1,9 @@
 //! Base library to build Halo2 circuits.
-#![feature(generic_const_exprs)]
-#![feature(stmt_expr_attributes)]
-#![feature(trait_alias)]
-#![feature(associated_type_defaults)]
-#![allow(incomplete_features)]
+// Nightly features removed for stable Rust compatibility:
+// #![feature(generic_const_exprs)]
+// #![feature(stmt_expr_attributes)]  -- stabilized in Rust 1.61
+// #![feature(trait_alias)]
+// #![feature(associated_type_defaults)]
 #![deny(clippy::perf)]
 #![allow(clippy::too_many_arguments)]
 #![warn(clippy::default_numeric_fallback)]

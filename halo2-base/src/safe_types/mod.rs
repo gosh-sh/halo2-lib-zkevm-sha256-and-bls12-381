@@ -95,9 +95,11 @@ impl<F: ScalarField, const TOTAL_BITS: usize> TryFrom<Vec<SafeByte<F>>>
 
 /// Represent TOTAL_BITS with the least number of AssignedValue<F>.
 /// (2^(F::NUM_BITS) - 1) might not be a valid value for F. e.g. max value of F is a prime in [2^(F::NUM_BITS-1), 2^(F::NUM_BITS) - 1]
-#[allow(type_alias_bounds)]
-type CompactSafeType<F: ScalarField, const TOTAL_BITS: usize> =
-    SafeType<F, { (F::CAPACITY / 8) as usize }, TOTAL_BITS>;
+/// Number of bytes per limb for compact safe types.
+/// For BN254 Fr: CAPACITY=253, 253/8=31. For BLS12-381 Fr: CAPACITY=255, 255/8=31.
+const BYTES_PER_LIMB: usize = 31;
+
+type CompactSafeType<F, const TOTAL_BITS: usize> = SafeType<F, BYTES_PER_LIMB, TOTAL_BITS>;
 
 /// SafeType for uint8.
 pub type SafeUint8<F> = CompactSafeType<F, 8>;
