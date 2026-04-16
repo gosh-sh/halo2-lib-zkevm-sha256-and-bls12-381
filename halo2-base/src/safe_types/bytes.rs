@@ -168,24 +168,27 @@ impl<F: ScalarField> FixLenBytesVec<F> {
     }
 }
 
-impl<F: ScalarField, const TOTAL_BITS: usize> From<SafeType<F, 1, TOTAL_BITS>>
-    for FixLenBytes<F, { SafeType::<F, 1, TOTAL_BITS>::VALUE_LENGTH }>
-{
-    fn from(bytes: SafeType<F, 1, TOTAL_BITS>) -> Self {
-        let bytes = bytes.value.into_iter().map(|b| SafeByte(b)).collect::<Vec<_>>();
-        Self::new(bytes.try_into().unwrap())
-    }
-}
-
-impl<F: ScalarField, const TOTAL_BITS: usize>
-    From<FixLenBytes<F, { SafeType::<F, 1, TOTAL_BITS>::VALUE_LENGTH }>>
-    for SafeType<F, 1, TOTAL_BITS>
-{
-    fn from(bytes: FixLenBytes<F, { SafeType::<F, 1, TOTAL_BITS>::VALUE_LENGTH }>) -> Self {
-        let bytes = bytes.bytes.into_iter().map(|b| b.0).collect::<Vec<_>>();
-        Self::new(bytes)
-    }
-}
+// NOTE: These From impls require generic_const_exprs (nightly) and are unused by downstream crates.
+// Commented out for stable Rust compatibility.
+//
+// impl<F: ScalarField, const TOTAL_BITS: usize> From<SafeType<F, 1, TOTAL_BITS>>
+//     for FixLenBytes<F, { SafeType::<F, 1, TOTAL_BITS>::VALUE_LENGTH }>
+// {
+//     fn from(bytes: SafeType<F, 1, TOTAL_BITS>) -> Self {
+//         let bytes = bytes.value.into_iter().map(|b| SafeByte(b)).collect::<Vec<_>>();
+//         Self::new(bytes.try_into().unwrap())
+//     }
+// }
+//
+// impl<F: ScalarField, const TOTAL_BITS: usize>
+//     From<FixLenBytes<F, { SafeType::<F, 1, TOTAL_BITS>::VALUE_LENGTH }>>
+//     for SafeType<F, 1, TOTAL_BITS>
+// {
+//     fn from(bytes: FixLenBytes<F, { SafeType::<F, 1, TOTAL_BITS>::VALUE_LENGTH }>) -> Self {
+//         let bytes = bytes.bytes.into_iter().map(|b| b.0).collect::<Vec<_>>();
+//         Self::new(bytes)
+//     }
+// }
 
 /// Represents a fixed length byte array in circuit as a vector, where length must be fixed.
 /// Not encouraged to use because `LEN` cannot be verified at compile time.
