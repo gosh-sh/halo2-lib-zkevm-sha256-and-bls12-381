@@ -209,3 +209,63 @@ fn bit_sha256_prover(k: u32) {
 
     check_proof(&params, pk.get_vk(), &proof, true);
 }
+
+// ---------------------------------------------------------------------------
+// Single-input large-size prover benchmarks for cross-implementation comparison
+// ---------------------------------------------------------------------------
+
+fn run_zkevm_single_input_bench(input_len: usize, k: u32) {
+    let _ = env_logger::builder().is_test(true).try_init();
+    let params = gen_srs(k);
+    let num_rows = 2usize.pow(k) - 109;
+
+    let dummy_circuit = Sha256BitCircuit::<Fr>::new(Some(num_rows), vec![], false);
+    let t_keygen = std::time::Instant::now();
+    let vk = keygen_vk(&params, &dummy_circuit).unwrap();
+    let pk = keygen_pk(&params, vk, &dummy_circuit).unwrap();
+    println!("zkevm {}B: keygen time: {:?}", input_len, t_keygen.elapsed());
+
+    let input: Vec<u8> = (0u8..=255).cycle().take(input_len).collect();
+    let inputs = vec![input];
+    let circuit = Sha256BitCircuit::new(Some(num_rows), inputs, true);
+
+    let start = std::time::Instant::now();
+    let proof = gen_proof(&params, &pk, circuit);
+    let prove_time = start.elapsed();
+    println!("zkevm {}B: proving time: {:?}, proof size: {} bytes", input_len, prove_time, proof.len());
+
+    let start = std::time::Instant::now();
+    check_proof(&params, pk.get_vk(), &proof, true);
+    println!("zkevm {}B: verification time: {:?}", input_len, start.elapsed());
+}
+
+#[test]
+fn bit_sha256_bench_55bytes() {
+    run_zkevm_single_input_bench(55, 10);
+}
+
+#[test]
+fn bit_sha256_bench_4096bytes() {
+    // 65 blocks * 72 rows = 4680 + 109 < 8192 = 2^13
+    run_zkevm_single_input_bench(4096, 13);
+}
+
+#[test]
+fn bit_sha256_bench_10000bytes() {
+    // 157 blocks * 72 rows = 11304 + 109 < 16384 = 2^14
+    run_zkevm_single_input_bench(10_000, 14);
+}
+
+#[test]
+#[ignore]
+fn bit_sha256_bench_100000bytes() {
+    // 1563 blocks * 72 rows = 112536 + 109 < 131072 = 2^17
+    run_zkevm_single_input_bench(100_000, 17);
+}
+
+#[test]
+#[ignore]
+fn bit_sha256_bench_1mb() {
+    // 16385 blocks * 72 rows = 1179720 + 109 < 2097152 = 2^21
+    run_zkevm_single_input_bench(1_048_576, 21);
+}

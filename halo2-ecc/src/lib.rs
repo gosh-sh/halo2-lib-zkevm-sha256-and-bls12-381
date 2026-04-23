@@ -1,7 +1,7 @@
 #![allow(clippy::too_many_arguments)]
 #![allow(clippy::op_ref)]
 #![allow(clippy::type_complexity)]
-#![feature(trait_alias)]
+// #![feature(trait_alias)] // removed for stable Rust — unused in halo2-ecc
 
 pub mod bigint;
 pub mod ecc;
