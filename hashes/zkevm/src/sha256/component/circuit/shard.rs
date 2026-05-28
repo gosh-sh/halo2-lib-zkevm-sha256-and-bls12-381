@@ -365,7 +365,7 @@ impl<F: Field> Sha256ComponentShardCircuit<F> {
             lookup_key_per_block.iter().zip_eq(loaded_sha256_blocks)
         {
             let is_final = AssignedValue::from(loaded_block.is_final);
-            let key = gate.select(ctx, *compact_output.hash(), dummy_key_witness, is_final);
+            let key = gate.select(ctx, compact_output.hash(), dummy_key_witness, is_final);
             let hash_lo =
                 gate.select(ctx, loaded_block.hash_lo, dummy_sha256_lo_witness, is_final);
             let hash_hi =

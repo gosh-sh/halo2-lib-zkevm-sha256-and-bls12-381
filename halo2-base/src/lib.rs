@@ -3,7 +3,14 @@
 // #![feature(generic_const_exprs)]
 // #![feature(stmt_expr_attributes)]  -- stabilized in Rust 1.61
 // #![feature(trait_alias)]
-// #![feature(associated_type_defaults)]
+// NOTE (v0.4.1 bump): upstream v0.4.1 gives `VirtualRegionManager::Assignment`
+// a default (`= ()`) via the unstable `associated_type_defaults` feature. To
+// keep this fork buildable on *stable* (the whole reason the gosh fork exists),
+// we keep `Assignment` WITHOUT a default here — every halo2-base impl already
+// specifies it explicitly. The only external impl that relied on the upstream
+// default is `axiom-eth`'s `RlcManager`; consumers that pull axiom-eth carry a
+// one-line patch adding `type Assignment = ();` to that impl (see
+// acki-nacki-bridge tvm-sdk integration / docs/zkhalo2verifywithvk_reference.md).
 #![deny(clippy::perf)]
 #![allow(clippy::too_many_arguments)]
 #![warn(clippy::default_numeric_fallback)]
