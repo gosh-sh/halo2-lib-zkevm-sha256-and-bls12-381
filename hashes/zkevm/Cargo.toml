@@ -24,8 +24,14 @@ rayon = "1.8"
 sha2 = "0.10.7"
 sha3 = "0.10.8"
 # always included but without features to use Native poseidon and get CircuitExt trait
+# Pinned to ccdb510 (matches the rev pinned in gosh-sh/axiom-eth on branch
+# gosh-stable-rlcmanager-assignment). Tracking `branch = "main"` would let
+# this transitive dep advance past PR #71 (which renamed
+# `Halo2KzgAccumulationScheme` → `AccumulationSchemeSDK`) while axiom-eth
+# stays pinned, creating two snark-verifier-sdk copies in any graph that
+# pulls both axiom-eth and zkevm-hashes.
 # snark-verifier-sdk = { version = "=0.1.7", default-features = false }
-snark-verifier-sdk = { git = "https://github.com/gosh-sh/snark-verifier", branch = "main", default-features = false }
+snark-verifier-sdk = { git = "https://github.com/gosh-sh/snark-verifier", rev = "ccdb510f60c577f2b683e1f77e1faa91a95f8c5c", default-features = false }
 getset = "0.1.2"
 type-map = "0.5.0"
 
