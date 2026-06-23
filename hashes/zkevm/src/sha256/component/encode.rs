@@ -8,14 +8,13 @@ use halo2_base::{
 };
 use itertools::Itertools;
 use num_bigint::BigUint;
-use snark_verifier::loader::native::NativeLoader;
 
 use crate::{
     sha256::vanilla::{param::*, util::get_num_sha2_blocks},
     util::eth_types::Field,
 };
 
-use super::param::*;
+use super::{create_native_poseidon_sponge, param::*};
 
 // For reference, when F is bn254::Fr:
 // NUM_BITS_PER_WORD = 32  (SHA-256 uses 32-bit words, vs 64-bit for keccak)
@@ -80,12 +79,7 @@ pub fn encode_native_input<F: Field>(bytes: &[u8]) -> F {
         })
         .collect_vec();
     // Absorb witnesses block by block.
-    let mut native_poseidon_sponge =
-        snark_verifier::util::hash::Poseidon::<F, F, POSEIDON_T, POSEIDON_RATE>::new::<
-            POSEIDON_R_F,
-            POSEIDON_R_P,
-            POSEIDON_SECURE_MDS,
-        >(&NativeLoader);
+    let mut native_poseidon_sponge = create_native_poseidon_sponge();
     for witnesses in witnesses_per_block {
         for absorbing in witnesses.chunks(POSEIDON_RATE) {
             // Pad 0s to make sure absorb.len() == RATE, so witnesses of different blocks are
@@ -142,7 +136,7 @@ pub fn encode_var_len_bytes_vec<F: Field>(
         initialized_hasher.hash_compact_chunk_inputs(ctx, range_chip.gate(), &chunk_inputs);
     range_chip.gate().select_by_indicator(
         ctx,
-        compact_outputs.into_iter().map(|o| *o.hash()),
+        compact_outputs.into_iter().map(|o| o.hash()),
         f_indicator,
     )
 }

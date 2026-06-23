@@ -1,8 +1,7 @@
-use super::{encode::encode_native_input, param::*};
+use super::{create_native_poseidon_sponge, encode::encode_native_input};
 use crate::{sha256::vanilla::util::get_num_sha2_blocks, util::eth_types::Field};
 use itertools::Itertools;
 use sha2::{Digest, Sha256};
-use snark_verifier::loader::native::NativeLoader;
 
 /// Witnesses to be exposed as circuit outputs.
 #[derive(Clone, Copy, PartialEq, Debug)]
@@ -61,12 +60,7 @@ pub fn dummy_circuit_output<F: Field>() -> Sha256CircuitOutput<F> {
 
 /// Calculate the commitment of circuit outputs.
 pub fn calculate_circuit_outputs_commit<F: Field>(outputs: &[Sha256CircuitOutput<F>]) -> F {
-    let mut native_poseidon_sponge =
-        snark_verifier::util::hash::Poseidon::<F, F, POSEIDON_T, POSEIDON_RATE>::new::<
-            POSEIDON_R_F,
-            POSEIDON_R_P,
-            POSEIDON_SECURE_MDS,
-        >(&NativeLoader);
+    let mut native_poseidon_sponge = create_native_poseidon_sponge();
     native_poseidon_sponge.update(
         &outputs
             .iter()

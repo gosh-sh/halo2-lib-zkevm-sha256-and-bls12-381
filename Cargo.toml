@@ -37,3 +37,16 @@ inherits = "release"
 debug = true
 
 [patch.crates-io]
+# v0.4.1 bump: zkevm-hashes now pulls `snark-verifier-sdk` (tag v0.1.7-git), which
+# would otherwise drag in axiom's own halo2-base (git tag) + crates.io halo2-axiom,
+# producing a SECOND halo2 backend that clashes (duplicate `Selector`/`Circuit`
+# types) with the gosh backend used by our halo2-base. Redirect every halo2-lib /
+# halo2-axiom dependency in the graph to the gosh fork so there is exactly ONE
+# backend. Consumers of this fork (tvm-sdk, bridge orchestrator) must mirror these
+# patches in their own root manifests.
+halo2-axiom = { git = "https://github.com/gosh-sh/halo2-axiom", branch = "main" }
+
+[patch."https://github.com/axiom-crypto/halo2-lib.git"]
+halo2-base = { path = "halo2-base" }
+halo2-ecc = { path = "halo2-ecc" }
+zkevm-hashes = { path = "hashes/zkevm" }
