@@ -24,14 +24,16 @@ rayon = "1.8"
 sha2 = "0.10.7"
 sha3 = "0.10.8"
 # always included but without features to use Native poseidon and get CircuitExt trait
-# Pinned to ccdb510 (matches the rev pinned in gosh-sh/axiom-eth on branch
-# gosh-stable-rlcmanager-assignment). Tracking `branch = "main"` would let
-# this transitive dep advance past PR #71 (which renamed
-# `Halo2KzgAccumulationScheme` → `AccumulationSchemeSDK`) while axiom-eth
-# stays pinned, creating two snark-verifier-sdk copies in any graph that
-# pulls both axiom-eth and zkevm-hashes.
+# Pinned to 164bd42e (branch stable-rust-on-ccdb510), matching the rev
+# now pinned in gosh-sh/axiom-eth on `gosh-stable-rlcmanager-assignment`.
+# 164bd42e == ccdb510 + mechanical PR-#72 backport for stable Rust: trait
+# aliases become regular traits with blanket GWC/SHPLONK impls, and the
+# `AggregationCircuit` associated-type default is dropped. Crucially this
+# rev does NOT take PR #71's rename — `Halo2KzgAccumulationScheme` is kept,
+# so axiom-eth (which references the old name) and zkevm-hashes still share
+# one snark-verifier-sdk copy in the graph.
 # snark-verifier-sdk = { version = "=0.1.7", default-features = false }
-snark-verifier-sdk = { git = "https://github.com/gosh-sh/snark-verifier", rev = "ccdb510f60c577f2b683e1f77e1faa91a95f8c5c", default-features = false }
+snark-verifier-sdk = { git = "https://github.com/gosh-sh/snark-verifier", rev = "164bd42e300b382239e63b16532faca539d6b324", default-features = false }
 getset = "0.1.2"
 type-map = "0.5.0"
 
