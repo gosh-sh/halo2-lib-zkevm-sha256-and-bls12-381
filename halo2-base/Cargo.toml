@@ -25,7 +25,9 @@ ark-std = { version = "0.3.0", features = ["print-trace"], optional = true }
 
 # Use Axiom's custom halo2 monorepo for faster proving when feature = "halo2-axiom" is on
 # gosh fork: point at the gosh-maintained halo2-axiom backend.
-halo2_proofs_axiom = { git = "https://github.com/gosh-sh/halo2-axiom", branch = "main", package = "halo2-axiom", optional = true }
+# halo2-axiom's default "multicore" feature is a compile error on wasm32 without
+# atomics, so it is enabled below for other targets only.
+halo2_proofs_axiom = { git = "https://github.com/gosh-sh/halo2-axiom", branch = "main", package = "halo2-axiom", default-features = false, features = ["batch", "circuit-params"], optional = true }
 # Use PSE halo2 and halo2curves for compatibility when feature = "halo2-pse" is on
 halo2_proofs = { git = "https://github.com/privacy-scaling-explorations/halo2.git", tag = "v0.3.0", features = ["circuit-params", "derive_serde"], optional = true }
 
@@ -50,6 +52,9 @@ env_logger = "0.10.0"
 proptest = "1.1.0"
 # native poseidon for testing
 pse-poseidon = { git = "https://github.com/axiom-crypto/pse-poseidon.git" }
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+halo2_proofs_axiom = { git = "https://github.com/gosh-sh/halo2-axiom", branch = "main", package = "halo2-axiom", default-features = false, features = ["multicore"], optional = true }
 
 # memory allocation
 [target.'cfg(not(target_env = "msvc"))'.dependencies]
